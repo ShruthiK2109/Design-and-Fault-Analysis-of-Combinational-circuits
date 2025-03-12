@@ -1,0 +1,218 @@
+READING THE VERILOG FILE:
+
+BUILD-T> read_netlist /home/eng/s/skm210012/SYNOPSYS/WORK/gtech_lib.v -library
+  Begin reading netlist ( /home/eng/s/skm210012/SYNOPSYS/WORK/gtech_lib.v )... 
+ Warning: Rule N2 (unsupported construct) was violated 10 times.
+
+  End parsing Verilog file /home/eng/s/skm210012/SYNOPSYS/WORK/gtech_lib.v with 0 errors. 
+  End reading netlist: #modules=106, top=GTECH_ZERO, #lines=1976, CPU_time=0.02 sec, Memory=0MB 
+BUILD-T> read_netlist /home/eng/s/skm210012/SYNOPSYS/WORK/circuit3_gtech.v
+  Begin reading netlist ( /home/eng/s/skm210012/SYNOPSYS/WORK/circuit3_gtech.v )... 
+  End parsing Verilog file /home/eng/s/skm210012/SYNOPSYS/WORK/circuit3_gtech.v with 0 errors. 
+  End reading netlist: #modules=1, top=circuit3_gtech, #lines=16, CPU_time=0.00 sec, Memory=0MB 
+BUILD-T> 
+
+
+
+BUILDING THE ATPG MODEL:
+
+BUILD-T> run_build_model circuit3_gtech
+  ------------------------------------------------------------------------------ 
+  Begin build model for topcut = circuit3_gtech ... 
+  ------------------------------------------------------------------------------ 
+  There were 4 primitives and 0 faultable pins removed during model optimizations 
+  End build model: #primitives=12, CPU_time=0.00 sec, Memory=0MB 
+  ------------------------------------------------------------------------------ 
+  Begin learning analyses... 
+  End learning analyses, total learning CPU time=0.00 sec. 
+  ------------------------------------------------------------------------------ 
+DRC-T> 
+
+
+
+DRC CHECK:
+
+DRC-T> run_drc
+  ------------------------------------------------------------------------------ 
+  Begin scan design rules checking... 
+  ------------------------------------------------------------------------------ 
+  Begin simulating test protocol procedures... 
+  Test protocol simulation completed, CPU time=0.00 sec. 
+  ------------------------------------------------------------------------------ 
+  Begin scan chain operation checking... 
+  Scan chain operation checking completed, CPU time=0.00 sec. 
+  ------------------------------------------------------------------------------ 
+  Begin nonscan rules checking... 
+  Nonscan cell summary: #DFF=0  #DLAT=0  #RAM_outs=0  tla_usage_type=none 
+  Nonscan rules checking completed, CPU time=0.00 sec. 
+  ------------------------------------------------------------------------------ 
+  Begin DRC dependent learning... 
+  Fast-sequential depth results: control=0(0), observe=0(0), detect=0(0), CPU time=0.00 sec 
+  DRC dependent learning completed, CPU time=0.00 sec. 
+  ------------------------------------------------------------------------------ 
+  DRC Summary Report 
+  ------------------------------------------------------------------------------ 
+  No violations occurred during DRC process. 
+  Design rules checking was successful, total CPU time=0.00 sec. 
+  ------------------------------------------------------------------------------ 
+TEST-T> 
+
+
+
+PERFORMING ATPG:
+
+TEST-T> remove_faults -all
+  0 faults were removed from the fault list. 
+TEST-T> add_faults -all
+  48 faults were added to fault list. 
+TEST-T> run_atpg -ndetects 1
+  ATPG performed for stuck fault model using internal pattern source. 
+  ---------------------------------------------------------- 
+  #patterns     #faults     #ATPG faults  test      process 
+  stored     detect/active  red/au/abort  coverage  CPU time 
+  ---------  -------------  ------------  --------  -------- 
+  Begin deterministic ATPG: #uncollapsed_faults=48, abort_limit=10... 
+  5              34      0         4/0/0   100.00%      0.00 
+   
+      Uncollapsed Stuck Fault Summary Report 
+  ----------------------------------------------- 
+  fault class                     code   #faults 
+  ------------------------------  ----  --------- 
+  Detected                         DT         34 
+  Possibly detected                PT          0 
+  Undetectable                     UD         14 
+  ATPG untestable                  AU          0 
+  Not detected                     ND          0 
+  ----------------------------------------------- 
+  total faults                                48 
+  test coverage                           100.00% 
+  ----------------------------------------------- 
+             Pattern Summary Report 
+  ----------------------------------------------- 
+  #internal patterns                           5 
+      #basic_scan patterns                     5 
+  ----------------------------------------------- 
+TEST-T> 
+
+TEST-T> set_faults -report collapsed -fault_coverage
+ Warning: Unused gate deletion affects fault coverage calculation. (M245)
+
+TEST-T> remove_faults -all
+ Warning: Internal pattern set is now deleted. (M133)
+
+  18 faults were removed from the fault list. 
+TEST-T> add_faults -all
+  18 faults were added to fault list. 
+TEST-T> run_atpg -ndetects 1
+  ATPG performed for stuck fault model using internal pattern source. 
+  ---------------------------------------------------------- 
+  #patterns     #faults     #ATPG faults  test      process 
+  stored     detect/active  red/au/abort  coverage  CPU time 
+  ---------  -------------  ------------  --------  -------- 
+  Begin deterministic ATPG: #collapsed_faults=18, abort_limit=10... 
+  6              14      0         4/0/0   100.00%      0.00 
+   
+       Collapsed Stuck Fault Summary Report 
+  ----------------------------------------------- 
+  fault class                     code   #faults 
+  ------------------------------  ----  --------- 
+  Detected                         DT         14 
+  Possibly detected                PT          0 
+  Undetectable                     UD          4 
+  ATPG untestable                  AU          0 
+  Not detected                     ND          0 
+  ----------------------------------------------- 
+  total faults                                18 
+  test coverage                           100.00% 
+  fault coverage                           77.78% 
+  ----------------------------------------------- 
+             Pattern Summary Report 
+  ----------------------------------------------- 
+  #internal patterns                           6 
+      #basic_scan patterns                     6 
+  ----------------------------------------------- 
+TEST-T> 
+
+
+
+REPORT FAULTS:
+
+ sa1   DS   x1   (_PI)   ( 2: 0/1/0, SCOAP=1/1/4 0/0/0/0 ) 
+  sa1   DS   GTECH_AND25/Z   (GTECH_AND2)   ( 3: 8/1/0, SCOAP=1/4/1 0/0/0/0 ) 
+  sa1   DS   GTECH_AND25/B   (GTECH_AND2)   ( 4: 8/1/2, SCOAP=1/4/1 0/0/0/0 ) 
+  sa0   DS   GTECH_OR27/A   (GTECH_OR2)   ( 5: 9/0/2, SCOAP=2/1/4 0/0/0/0 ) 
+  sa1   DS   z   (_PO)   ( 6: 11/1/0, SCOAP=1/5/0 0/0/0/0 ) 
+  sa0   DS   z   (_PO)   ( 7: 11/0/0, SCOAP=1/5/0 0/0/0/0 ) 
+  sa0   UR   x5   (_PI)   ( 8: 4/0/0, SCOAP=1/1/5 0/0/0/0 ) 
+  sa1   UR   GTECH_OR22/Z   (GTECH_OR2)   ( 9: 6/1/0, SCOAP=2/1/4 0/0/0/0 ) 
+  sa1   DS   x2   (_PI)   ( 10: 1/1/0, SCOAP=1/1/4 0/0/0/0 ) 
+  sa1   DS   GTECH_AND20/Z   (GTECH_AND2)   ( 11: 5/1/0, SCOAP=1/2/3 0/0/0/0 ) 
+  sa1   DS   GTECH_AND20/B   (GTECH_AND2)   ( 12: 5/1/2, SCOAP=1/2/3 0/0/0/0 ) 
+  sa0   DS   GTECH_OR22/A   (GTECH_OR2)   ( 13: 6/0/1, SCOAP=2/1/4 0/0/0/0 ) 
+  sa1   DS   GTECH_AND24/Z   (GTECH_AND2)   ( 14: 7/1/0, SCOAP=1/3/2 0/0/0/0 ) 
+  sa0   DS   GTECH_AND24/Z   (GTECH_AND2)   ( 15: 7/0/0, SCOAP=1/3/2 0/0/0/0 ) 
+  sa0   UR   x4   (_PI)   ( 16: 3/0/0, SCOAP=1/1/5 0/0/0/0 ) 
+  sa0   DS   x3   (_PI)   ( 17: 2/0/0, SCOAP=1/1/4 0/0/0/0 ) 
+  sa1   DS   x3   (_PI)   ( 18: 2/1/0, SCOAP=1/1/4 0/0/0/0 ) 
+ 
+
+
+REPORT PATTERNS:
+
+Time 0: force_all_pis =   11110 
+  Time 1: measure_all_pos = 1 
+  Pattern 1 (basic_scan) 
+  Time 0: force_all_pis =   00011 
+  Time 1: measure_all_pos = 0 
+  Pattern 2 (basic_scan) 
+  Time 0: force_all_pis =   10101 
+  Time 1: measure_all_pos = 0 
+  Pattern 3 (basic_scan) 
+  Time 0: force_all_pis =   01101 
+  Time 1: measure_all_pos = 0 
+  Pattern 4 (basic_scan) 
+  Time 0: force_all_pis =   11101 
+  Time 1: measure_all_pos = 1 
+  Pattern 5 (basic_scan) 
+  Time 0: force_all_pis =   11010 
+  Time 1: measure_all_pos = 0 
+
+
+PATTERN COMPRESSION:
+
+TEST-T> set_atpg -merge low
+TEST-T> remove_faults -all
+ Warning: Internal pattern set is now deleted. (M133)
+
+  18 faults were removed from the fault list. 
+TEST-T> add_faults -all
+  18 faults were added to fault list. 
+TEST-T> run_atpg -ndetects 1
+  ATPG performed for stuck fault model using internal pattern source. 
+  ---------------------------------------------------------- 
+  #patterns     #faults     #ATPG faults  test      process 
+  stored     detect/active  red/au/abort  coverage  CPU time 
+  ---------  -------------  ------------  --------  -------- 
+  Begin deterministic ATPG: #collapsed_faults=18, abort_limit=10... 
+  6              14      0         4/0/0   100.00%      0.00 
+   
+       Collapsed Stuck Fault Summary Report 
+  ----------------------------------------------- 
+  fault class                     code   #faults 
+  ------------------------------  ----  --------- 
+  Detected                         DT         14 
+  Possibly detected                PT          0 
+  Undetectable                     UD          4 
+  ATPG untestable                  AU          0 
+  Not detected                     ND          0 
+  ----------------------------------------------- 
+  total faults                                18 
+  test coverage                           100.00% 
+  fault coverage                           77.78% 
+  ----------------------------------------------- 
+             Pattern Summary Report 
+  ----------------------------------------------- 
+  #internal patterns                           6 
+      #basic_scan patterns                     6 
+  ----------------------------------------------- 
+TEST-T> 
